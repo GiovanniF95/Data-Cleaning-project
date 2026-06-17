@@ -1,0 +1,25 @@
+## 📊 Dataset Description
+
+The dataset used in this project contains information about global company layoffs across different industries, countries, and funding stages.
+
+Each row represents a layoff event and includes key business attributes such as the number of employees affected, percentage of workforce laid off, company details, and financial stage.
+
+### 📌 Columns Description
+
+- **Location**: City where the company is based or where the layoff occurred  
+- **Total_Laid_Off**: Number of employees laid off in the event  
+- **Percentage_laid_off**: Percentage of the total workforce affected  
+- **stage**: Funding stage of the company (e.g., Series C, Post-IPO, Acquired)  
+- **funds_raised_million**: Total funding raised by the company (in millions USD)  
+- **company**: Name of the company  
+- **industry**: Industry sector of the company  
+- **country**: Country where the company operates  
+- **date_new**: Date of the layoff event (converted to DATE format)
+
+### ⚠️ Data Quality Issues Identified
+
+During exploration, several data issues were found:
+- Duplicate rows
+- Missing values in key columns (e.g., Total_Laid_Off, industry, funds_raised_million)
+- Inconsistent categorical values (e.g., industry and country standardization)
+- Null values stored as both `NULL` and `'NULL'`
