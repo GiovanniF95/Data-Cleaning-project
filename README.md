@@ -1,91 +1,95 @@
-# Data-Cleaning-project
-This project focuses on data cleaning using SQL. It transforms raw data into a clean and consistent dataset by handling missing values, removing duplicates, standardizing formats, and correcting inconsistencies. The goal is to prepare reliable data for analysis and reporting.
+📌 Project Overview
 
--- 1) Creation of a Table where I can work in order to not modify the RAW DATA
+This project focuses on cleaning and preparing a layoffs dataset using SQL in Google BigQuery.
+The goal is to transform raw, inconsistent data into a structured and analysis-ready dataset.
 
-CREATE TABLE long-way-462416-v0.DATA_CLEANING_PROJECT.Layoff_Staging AS SELECT* FROM long-way-462416-v0.DATA_CLEANING_PROJECT.layoff_table
+The process includes data exploration, deduplication, handling missing values, standardization, and final dataset creation.
 
--- 2) Removing all the duplicates in the dataset - If ROW_NUM > 1 means we have duplicates
+⚙️ Tools Used
+Google BigQuery
+SQL
+Data cleaning techniques (CTAS approach)
 
-SELECT *, 
+🚧 Important Context / Limitations
+Due to limitations in the BigQuery environment used for this project, row-level UPDATE operations were not utilized.
 
-ROW_NUMBER() OVER( PARTITION BY company, Location, Industry, Total_Laid_Off, Percentage_laid_off, 'date', stage, country, funds_raised_million) AS ROW_NUM FROM long-way-462416-v0.DATA_CLEANING_PROJECT.Layoff_Staging
+Instead, the data cleaning process was implemented using a modular ELT approach, relying on:
 
--- Identifying the duplicates lines (ROW_NUM>1)
+CREATE OR REPLACE TABLE (CTAS)
+step-by-step transformation pipelines
+staging tables for intermediate processing
 
-WITH Duplicate_CTE AS (SELECT *, ROW_NUMBER() OVER( PARTITION BY company, Location, Industry, Total_Laid_Off, Percentage_laid_off, date, stage, country, funds_raised_million) AS ROW_NUM FROM long-way-462416-v0.DATA_CLEANING_PROJECT.Layoff_Staging)
+This approach is commonly used in data warehouse environments and ensures full reproducibility of the pipeline.
 
-SELECT *, 
-FROM Duplicate_CTE WHERE ROW_NUM>1;
+🧹 Data Cleaning Process
+The project follows these main steps:
 
--- Double checking if it is right
+1. Data Exploration
+Initial inspection of dataset structure
+Identification of missing values and duplicates
+Understanding data types and inconsistencies
 
-SELECT* FROM long-way-462416-v0.DATA_CLEANING_PROJECT.Layoff_Staging WHERE Company ="Elemy" OR Company ="Cazoo" OR Company ="Hibob" OR Company ="Wildlife Studios" OR Company ="Yahoo"
+2. Staging Table Creation
+A working copy of the raw dataset was created to avoid modifying original data.
 
--- Creating additional table from which we are going to delete the duplications
+3. Deduplication
+Duplicate rows were identified using ROW_NUMBER()
+Duplicates were removed keeping the first occurrence
 
-CREATE TABLE long-way-462416-v0.DATA_CLEANING_PROJECT.layoff_Staging2 ( company STRING, location STRING, industry STRING, total_laid_off INT64, percentage_laid_off STRING, date STRING, stage STRING, country STRING, funds_raised_million INT64, row_num INT64 );
+4. Standardization
+Trimmed inconsistent values (e.g., company names)
+Standardized categories such as:
+Crypto* → Crypto
+United States* → United States
 
--- Table with same data of the original one adding the ROW_NUM Column
+5. Date Formatting
+Converted string dates into proper DATE format using SAFE.PARSE_DATE
+Removed invalid or redundant date columns
 
-CREATE OR REPLACE TABLE long-way-462416-v0.DATA_CLEANING_PROJECT.layoff_Staging2 AS WITH Duplicate_CTE AS ( SELECT *, ROW_NUMBER() OVER( PARTITION BY company, location, industry, total_laid_off, percentage_laid_off, date, stage, country, funds_raised_million ) AS row_num FROM long-way-462416-v0.DATA_CLEANING_PROJECT.Layoff_Staging ) 
-SELECT * FROM Duplicate_CTE;
+6. Handling Missing Values
+Identified NULL, empty strings, and 'NULL' values
+Filled missing industry values using related records from the same company
+Applied COALESCE and NULLIF logic
 
--- Deleting duplication taking out lines with ROW_NUM>1
+7. Final Dataset Creation
+Removed unreliable records (e.g., rows with missing layoffs data)
+Created final clean table ready for analysis
 
-CREATE OR REPLACE TABLE long-way-462416-v0.DATA_CLEANING_PROJECT.layoff_Staging2 AS 
-SELECT * FROM long-way-462416-v0.DATA_CLEANING_PROJECT.layoff_Staging2 WHERE row_num = 1;
+📊 Final Output
+The final dataset (tabella_FINAL) is:
 
--- Double checking if it is right
+cleaned
+standardized
+deduplicated
+analysis-ready
 
-SELECT* FROM long-way-462416-v0.DATA_CLEANING_PROJECT.layoff_Staging2 WHERE ROW_NUM>1
+It can be used for:
 
--- 3) Standardazing Data
+exploratory data analysis (EDA)
+business insights
+visualization dashboards
 
--- Making TRIM in the first column
+🧠 Key SQL Techniques Used
+ROW_NUMBER() OVER (PARTITION BY ...)
+COALESCE
+NULLIF
+CASE WHEN
+SAFE.PARSE_DATE
+CREATE OR REPLACE TABLE
+Self JOINs
+Data standardization with LIKE
 
-CREATE OR REPLACE TABLE long-way-462416-v0.DATA_CLEANING_PROJECT.layoff_Staging2 AS 
-SELECT*
+📈 What I Learned
+Handling real-world messy datasets
+Building ETL-style pipelines in SQL
+Working within BigQuery limitations
+Designing reproducible data workflows
+Deduplication and missing data strategies
 
-EXCEPT(company), TRIM(company) AS company FROM long-way-462416-v0.DATA_CLEANING_PROJECT.layoff_Staging2;
+🚀 Future Improvements
+Add data validation tests
+Automate pipeline with scheduled queries
+Build dashboard (Looker Studio / Tableau)
+Add data quality checks (row counts, null checks)
 
--- Renaming Industries "Crypto%" naming in the same way
 
-CREATE OR REPLACE TABLE long-way-462416-v0.DATA_CLEANING_PROJECT.layoff_Staging2 AS SELECT*
-
-EXCEPT(industry), CASE WHEN industry LIKE 'Crypto%' THEN 'Crypto' ELSE industry END AS industry FROM long-way-462416-v0.DATA_CLEANING_PROJECT.layoff_Staging2;
-
-SELECT * FROM long-way-462416-v0.DATA_CLEANING_PROJECT.layoff_Staging2 WHERE industry LIKE "%Crypto%"
-
-SELECT DISTINCT industry FROM long-way-462416-v0.DATA_CLEANING_PROJECT.layoff_Staging2 ORDER BY industry
-
-SELECT DISTINCT country FROM long-way-462416-v0.DATA_CLEANING_PROJECT.layoff_Staging2 ORDER BY 1
-
--- Renaming country "United States%" naming in the same way
-
-CREATE OR REPLACE TABLE long-way-462416-v0.DATA_CLEANING_PROJECT.layoff_Staging2 AS SELECT*
-
-EXCEPT(country), CASE WHEN country LIKE 'United States%' THEN 'United States' ELSE country 
-
-END AS country FROM long-way-462416-v0.DATA_CLEANING_PROJECT.layoff_Staging2;
-
-SELECT DISTINCT country FROM long-way-462416-v0.DATA_CLEANING_PROJECT.layoff_Staging2 ORDER BY 1
-
-SELECT DISTINCT company FROM long-way-462416-v0.DATA_CLEANING_PROJECT.layoff_Staging2 ORDER BY 1
-
--- Changin column "date" in a date type (now is a STRING)
-
-SELECT date, SAFE.PARSE_DATE('%m/%d/%Y', date) AS date_New
-
-from long-way-462416-v0.DATA_CLEANING_PROJECT.layoff_Staging2
-
--- Create new table in which I have the correct format of the date
-
-CREATE OR REPLACE TABLE long-way-462416-v0.DATA_CLEANING_PROJECT.layoff_Staging2_clean AS
-SELECT*,
-  SAFE.PARSE_DATE('%m/%d/%Y', TRIM(date)) AS date_new -- I transform from STRING to format DATE in a new column named "date_NEW"
-FROM long-way-462416-v0.DATA_CLEANING_PROJECT.layoff_Staging2;
-
-ALTER TABLE long-way-462416-v0.DATA_CLEANING_PROJECT.layoff_Staging2_clean DROP COLUMN date; -- deleting the column date that is made of strings
-
--- Remove NULL and blank values
