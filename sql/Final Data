@@ -1,0 +1,30 @@
+## 📌 Final Cleaned Dataset – Sample
+
+Below is a sample of the final cleaned dataset after all transformations including deduplication, standardization, and missing value handling.
+
+NOTE
+Some fields in the dataset contain NULL values.
+
+These were intentionally preserved in the final dataset in cases where no reliable or sufficient information was available to impute or calculate them.
+
+Rather than removing these rows, the decision was made to keep them in order to maintain data integrity and avoid potential bias or loss of relevant observations.
+
+This approach reflects a realistic data analysis scenario, where missing values are often retained when no statistically or contextually valid method for imputation is available.
+
+| Location   | Total_Laid_Off | Percentage_laid_off | stage        | funds_raised_million | company             | industry        | country        | date_new   |
+|------------|----------------|----------------------|--------------|----------------------|---------------------|----------------|----------------|------------|
+| Ahmedabad  | 500            | 0.50                 | Unknown      | 200                  | Lendingkart         | Finance        | India          | 2020-05-15 |
+| Albany     | 371            | 0.31                 | Acquired     | NULL                 | CommerceHub         | Retail         | United States  | 2023-02-14 |
+| Amsterdam  | 4375           | 0.25                 | Acquired     | NULL                 | Booking.com         | Travel         | Netherlands    | 2020-07-30 |
+| Amsterdam  | NULL           | 0.24                 | Unknown      | 22                   | Change Invest       | Finance        | Netherlands    | 2022-11-27 |
+| Amsterdam  | 390            | NULL                 | Post-IPO     | 2800                 | Just Eat Takeaway   | Food           | Netherlands    | 2022-07-20 |
+| Amsterdam  | NULL           | 0.31                 | Series C     | 1100                 | MessageBird         | Other          | Netherlands    | 2022-11-29 |
+| Amsterdam  | 1500           | 0.15                 | Acquired     | NULL                 | OLX Group           | Marketing      | Netherlands    | 2023-01-30 |
+| Amsterdam  | 6000           | 0.13                 | Post-IPO     | NULL                 | Philips             | Healthcare     | Netherlands    | 2023-01-30 |
+| Amsterdam  | 225            | 0.25                 | Post-IPO     | 24700                | Uber                | Transportation | Netherlands    | 2020-06-12 |
+| Atlanta    | 104            | 0.21                 | Series D     | 556                  | Greenlight          | Finance        | United States  | 2023-01-12 |
+| Austin     | 6650           | 0.05                 | Post-IPO     | NULL                 | Dell                | Hardware       | United States  | 2023-02-06 |
+| Barcelona  | 250            | 0.06                 | Acquired     | 1200                 | Glovo               | Food           | Spain          | 2023-01-30 |
+| Bengaluru  | 2500           | 0.05                 | Private Equity | 5500               | Byju's              | Education      | India          | 2022-10-12 |
+| Bengaluru  | 200            | 0.4                  | Series D     | 214                  | Bounce              | Transportation | India          | 2021-02-22 |
+| Bengaluru  | 100            | 0.06                 | Series E     | 390                  | DealShare           | Retail         | India          | 2023-01-27 |
